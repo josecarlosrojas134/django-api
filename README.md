@@ -37,3 +37,20 @@ personalizado antes de la primera. Es el siguiente paso, no lo hagas con el `Use
 - Para escribir requisitos: elige el agente **spec-writer** y pídele una spec del dominio.
 - Para implementar: pide al agente principal que use la skill de backend Django.
 - Para revisar un cambio: pide que lance el subagente **reviewer**.
+
+## API
+
+| Método | Ruta | Auth | Qué hace |
+| --- | --- | --- | --- |
+| GET | `/api/v1/health/` | no | estado del servicio |
+| POST | `/api/v1/auth/token/` | no | login con email y contraseña |
+| POST | `/api/v1/auth/token/refresh/` | no | renueva el access token |
+| GET | `/api/v1/me/` | sí | usuario actual |
+| GET | `/api/v1/movies/` | no | cartelera |
+| GET | `/api/v1/screenings/` | no | funciones futuras |
+| GET | `/api/v1/screenings/{id}/seats/` | no | mapa de butacas |
+| GET/POST | `/api/v1/reservations/` | sí | mis reservas / crear reserva |
+| GET | `/api/v1/reservations/{id}/` | sí | detalle de mi reserva |
+| POST | `/api/v1/reservations/{id}/cancel/` | sí | cancelar y liberar butacas |
+
+Datos de ejemplo: `uv run python manage.py seed_demo` (película, sala y dos funciones).

@@ -10,6 +10,7 @@ en el contexto del agente; las specs concretas se leen cuando son relevantes.
 | --- | --- | --- |
 | [001-api-base.md](001-api-base.md) | Núcleo de la API | aprobada |
 | [002-auth.md](002-auth.md) | Autenticación email + JWT | implementada |
+| [003-booking.md](003-booking.md) | Cartelera y reserva de entradas | implementada |
 
 ## Cómo escribir una spec
 

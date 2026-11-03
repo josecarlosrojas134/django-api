@@ -20,6 +20,8 @@ config/settings/       base.py, dev.py, prod.py
 config/urls.py         URLs raíz de la API
 apps/<dominio>/        una app por dominio (models, services, serializers, views)
 apps/accounts/         usuario propio, login y perfil
+apps/catalog/          películas, salas y funciones
+apps/booking/          reservas y butacas
 apps/common/           utilidades realmente compartidas
 tests/                 tests que cruzan apps
 specs/                 qué debe hacer el sistema
@@ -86,6 +88,7 @@ cambió. Una spec desactualizada es peor que no tener spec.
 - El login es por `email`; no reintroducir `username` en ningún sitio.
 - Todo endpoint es privado por defecto (`IsAuthenticated` global); abrir uno requiere justificarlo.
 - URLs de negocio bajo `/api/v1/`, con barra final consistente.
+- La disponibilidad de butacas la garantiza el índice único parcial `unique_active_seat_per_screening`, no una comprobación en Python: no lo sustituyas.
 
 ## Reglas
 
