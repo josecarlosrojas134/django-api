@@ -1,0 +1,47 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Solo el índice de specs se carga siempre; las specs concretas se leen cuando toca.
+  "instructions": ["specs/README.md"],
+
+  // Permisos: gana la última regla que coincide. Lo amplio primero, excepciones después.
+  "permissions": [
+    { "action": "shell", "resource": "git push *", "effect": "ask" },
+    { "action": "shell", "resource": "*manage.py migrate*", "effect": "ask" },
+    { "action": "shell", "resource": "*manage.py makemigrations*", "effect": "ask" },
+    { "action": "shell", "resource": "rm -rf *", "effect": "deny" },
+    { "action": "edit", "resource": "**/.env*", "effect": "deny" },
+    { "action": "edit", "resource": "**/*.pem", "effect": "deny" }
+  ],
+
+  // Policies: bloqueo binario, no pregunta nunca y no se puede levantar con un "allow".
+  "policies": [
+    { "action": "tool.use", "resource": "edit:**/.env*", "effect": "deny" },
+    { "action": "tool.use", "resource": "shell:git push --force*", "effect": "deny" }
+  ],
+
+  "agents": {
+    // Agente para redactar specs. Solo puede escribir dentro de specs/.
+    "spec-writer": {
+      "description": "Redacta y actualiza specs en specs/ sin tocar código",
+      "mode": "primary",
+      "system": "Eres un analista de producto y sistemas. Escribes specs claras en specs/. Cada requisito va numerado y cada criterio de aceptación debe ser verificable con un test o una comprobación manual concreta. Incluye siempre una sección de Restricciones. No escribes código ni ejecutas comandos.",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "deny" },
+        { "action": "edit", "resource": "specs/**", "effect": "allow" },
+        { "action": "read", "resource": "*", "effect": "allow" },
+        { "action": "shell", "resource": "*", "effect": "deny" }
+      ]
+    },
+
+    // Revisor de solo lectura para cambios puntuales.
+    "reviewer": {
+      "description": "Revisa cambios de Django buscando bugs, problemas de migraciones y de seguridad",
+      "mode": "subagent",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "*", "effect": "deny" }
+      ]
+    }
+  }
+}
