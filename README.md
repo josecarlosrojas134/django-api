@@ -16,11 +16,32 @@ uv sync
 cp .env.example .env
 uv run python manage.py check
 uv run pytest
-uv run python manage.py runserver
+```
+
+Para levantar todo (backend + frontend) en Windows:
+
+```powershell
+.\dev.ps1
+```
+
+O por separado:
+
+```bash
+uv run python manage.py runserver          # http://127.0.0.1:8000
+cd frontend && npm run dev                 # http://localhost:5173
 ```
 
 Todavía **no se ha ejecutado ninguna migración**: falta definir el `AUTH_USER_MODEL`
 personalizado antes de la primera. Es el siguiente paso, no lo hagas con el `User` por defecto.
+
+## Frontend
+
+React + TypeScript + Tailwind, en `frontend/`.
+
+- Vite hace de proxy: todo lo que va a `/api` se reenvía a `http://127.0.0.1:8000`, así no hace falta CORS en desarrollo.
+- Sesión con JWT guardado en `localStorage`; `AuthContext` hidrata el usuario al cargar.
+- Pantallas: cartelera, selección de butacas y mis reservas.
+- Usuario de ejemplo creado en la base local: `demo@cine.local` / `cine12345`.
 
 ## Estructura
 

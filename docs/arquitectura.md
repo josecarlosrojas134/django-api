@@ -14,7 +14,10 @@ django-api/
 │       └── prod.py
 ├── apps/
 │   ├── common/              # utilidades compartidas
-│   └── <dominio>/           # models, services, serializers, views, tests
+│   ├── accounts/            # usuario, login y perfil
+│   ├── catalog/             # películas, salas y funciones
+│   └── booking/             # reservas y butacas
+├── frontend/                # React + TypeScript + Tailwind
 ├── specs/                   # qué debe hacer el sistema
 ├── docs/                    # cómo está construido (este directorio)
 └── manage.py

@@ -23,6 +23,7 @@ apps/accounts/         usuario propio, login y perfil
 apps/catalog/          películas, salas y funciones
 apps/booking/          reservas y butacas
 apps/common/           utilidades realmente compartidas
+frontend/              React + TypeScript + Tailwind (Vite)
 tests/                 tests que cruzan apps
 specs/                 qué debe hacer el sistema
 docs/                  cómo está construido
@@ -89,6 +90,14 @@ cambió. Una spec desactualizada es peor que no tener spec.
 - Todo endpoint es privado por defecto (`IsAuthenticated` global); abrir uno requiere justificarlo.
 - URLs de negocio bajo `/api/v1/`, con barra final consistente.
 - La disponibilidad de butacas la garantiza el índice único parcial `unique_active_seat_per_screening`, no una comprobación en Python: no lo sustituyas.
+
+## Frontend
+
+- `frontend/` es React + TypeScript + Tailwind, servido por Vite en el puerto 5173.
+- Todo acceso a la API pasa por `src/api/client.ts`; no llamar a `fetch` desde componentes.
+- En desarrollo Vite proxya `/api` a `http://127.0.0.1:8000`; no hace falta configurar CORS.
+- La sesión vive en `AuthContext` y el token en `localStorage`.
+- Verificación antes de terminar: `cd frontend; npm run build` sin errores de TypeScript.
 
 ## Reglas
 
