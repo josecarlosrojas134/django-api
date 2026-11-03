@@ -8,7 +8,8 @@ en el contexto del agente; las specs concretas se leen cuando son relevantes.
 
 | Spec | Dominio | Estado |
 | --- | --- | --- |
-| [001-api-base.md](001-api-base.md) | Núcleo de la API | borrador |
+| [001-api-base.md](001-api-base.md) | Núcleo de la API | aprobada |
+| [002-auth.md](002-auth.md) | Autenticación email + JWT | implementada |
 
 ## Cómo escribir una spec
 

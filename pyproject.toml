@@ -6,6 +6,7 @@ dependencies = [
     "django>=6.1.3",
     "django-environ>=0.14.0",
     "djangorestframework>=3.18.3",
+    "djangorestframework-simplejwt>=5.5.1",
     "pytest>=9.2.0",
     "pytest-django>=4.14.0",
     "ruff>=0.17.3",
@@ -20,6 +21,8 @@ addopts = "-q"
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+# Las migraciones las genera Django; reescribirlas complica los diffs sin aportar nada.
+extend-exclude = ["**/migrations/*.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "DJ", "S"]
@@ -27,4 +30,5 @@ ignore = ["S101"]  # assert es correcto en tests
 
 [tool.ruff.lint.per-file-ignores]
 "config/settings/*.py" = ["F403", "F405"]  # `from .base import *` es el patrón de Django
-"**/migrations/*.py" = ["E501"]
+"**/tests.py" = ["S105"]  # contraseñas literales en fixtures de test
+"tests/*.py" = ["S105"]

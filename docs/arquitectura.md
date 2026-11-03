@@ -34,6 +34,13 @@ django-api/
 - `dev`: SQLite, `DEBUG=True`, errores detallados.
 - `prod`: PostgreSQL, `DEBUG=False`, `ALLOWED_HOSTS` explícito, logs a stdout.
 
+## Autenticación
+
+- Usuario propio en `apps/accounts`: email único, sin `username`.
+- JWT (`djangorestframework-simplejwt`): `access` 30 min, `refresh` 7 días.
+- Todo endpoint es privado por defecto (`IsAuthenticated` global).
+- Endpoints: `POST /api/v1/auth/token/`, `POST /api/v1/auth/token/refresh/`, `GET /api/v1/me/`.
+
 ## Despliegue
 
 (Pendiente: completar cuando exista el proyecto real.)

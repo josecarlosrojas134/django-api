@@ -6,6 +6,7 @@ campos y URLs en inglés.
 ## Stack
 
 - Python 3.12, Django 6.1, Django REST Framework
+- Autenticación: JWT con `djangorestframework-simplejwt`, login por email
 - Dependencias y entorno: `uv` (`pyproject.toml` + `uv.lock` + `.python-version`)
 - Configuración por entorno: `django-environ`, leyendo `.env`
 - BD: SQLite en desarrollo, PostgreSQL en producción
@@ -18,6 +19,7 @@ campos y URLs en inglés.
 config/settings/       base.py, dev.py, prod.py
 config/urls.py         URLs raíz de la API
 apps/<dominio>/        una app por dominio (models, services, serializers, views)
+apps/accounts/         usuario propio, login y perfil
 apps/common/           utilidades realmente compartidas
 tests/                 tests que cruzan apps
 specs/                 qué debe hacer el sistema
@@ -81,6 +83,7 @@ cambió. Una spec desactualizada es peor que no tener spec.
 - Serializers para validación de entrada, nunca validación en la vista.
 - Migraciones: una por cambio lógico, con nombre descriptivo, nunca editando una ya aplicada.
 - `AUTH_USER_MODEL` personalizado **antes** de la primera migración aplicada.
+- El login es por `email`; no reintroducir `username` en ningún sitio.
 - Todo endpoint es privado por defecto (`IsAuthenticated` global); abrir uno requiere justificarlo.
 - URLs de negocio bajo `/api/v1/`, con barra final consistente.
 
