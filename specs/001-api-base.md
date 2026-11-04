@@ -38,7 +38,8 @@ La autenticación por email y JWT se especifica en [002-auth.md](002-auth.md).
 - No usar el `User` por defecto: `AUTH_USER_MODEL` personalizado desde la primera migración.
 - Ninguna vista puede contener lógica de negocio; va en `services.py`.
 - Sin secretos en el repositorio, ni siquiera en tests.
-- SQLite en desarrollo; nada de SQL específico de PostgreSQL en este alcance.
+- SQLite por defecto en desarrollo; `DATABASE_URL` permite apuntar a PostgreSQL sin tocar código.
+- Solo ORM: nada de SQL a mano que dependa de un motor concreto.
 
 ## Decisiones
 

@@ -34,7 +34,8 @@ django-api/
 
 ## Entornos
 
-- `dev`: SQLite, `DEBUG=True`, errores detallados.
+- `dev`: SQLite por defecto (o la BD que indique `DATABASE_URL`), `DEBUG=True`,
+  errores detallados.
 - `prod`: PostgreSQL, `DEBUG=False`, `ALLOWED_HOSTS` explícito, logs a stdout.
 
 ## Autenticación

@@ -1,6 +1,6 @@
 # Reserva de entradas de cine
 
-**Estado:** aprobada
+**Estado:** implementada
 **Dominio:** cartelera y reservas
 
 ## Contexto

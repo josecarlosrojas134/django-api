@@ -9,7 +9,7 @@ campos y URLs en inglés.
 - Autenticación: JWT con `djangorestframework-simplejwt`, login por email
 - Dependencias y entorno: `uv` (`pyproject.toml` + `uv.lock` + `.python-version`)
 - Configuración por entorno: `django-environ`, leyendo `.env`
-- BD: SQLite en desarrollo, PostgreSQL en producción
+- BD: SQLite por defecto en desarrollo (PostgreSQL si `DATABASE_URL` lo indica), PostgreSQL en producción
 - Tests: `pytest` + `pytest-django`
 - Lint y formato: `ruff`
 

@@ -12,8 +12,12 @@ def test_core_apps_are_installed():
     assert "apps.common" in settings.INSTALLED_APPS
 
 
-def test_sqlite_database_in_dev():
-    assert settings.DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3"
+def test_database_engine_is_supported():
+    """`dev` usa SQLite por defecto o PostgreSQL si `DATABASE_URL` apunta ahí."""
+    assert settings.DATABASES["default"]["ENGINE"] in {
+        "django.db.backends.sqlite3",
+        "django.db.backends.postgresql",
+    }
 
 
 def test_api_requires_authentication_by_default():
