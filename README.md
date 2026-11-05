@@ -1,6 +1,19 @@
-# django-api
+# CINEVOX · django-api
 
-Backend Django con configuración de agentes y specs para OpenCode.
+![CI](https://github.com/josecarlosrojas134/django-api/actions/workflows/ci.yml/badge.svg?branch=develop)
+![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-blue.svg)
+
+Cartelera de cine y reserva de butacas: Django REST Framework + React + TypeScript,
+autenticación JWT y reservas concurrentes sobre salas reales (índice único parcial
+`(función, fila, butaca)` para `active=True`).
+
+![Cartelera](docs/screenshots/cartelera.png)
+
+| Ficha de película | Selección de butacas |
+| --- | --- |
+| ![Ficha](docs/screenshots/ficha.png) | ![Butacas](docs/screenshots/butacas.png) |
+
+Backend Django con specs (`specs/`), documentación (`docs/`), CI y `main` protegida.
 
 ## Estado actual
 
@@ -102,3 +115,7 @@ La `.env` nunca se comparte (está en `.gitignore`); lo que se comparte es el es
 | POST | `/api/v1/reservations/{id}/cancel/` | sí | cancelar y liberar butacas |
 
 Datos de ejemplo: `uv run python manage.py seed_demo` (6 películas, 3 salas y 18 funciones con pósters reales; idempotente).
+
+## Licencia
+
+MIT — ver [LICENSE](LICENSE).

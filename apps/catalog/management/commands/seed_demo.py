@@ -6,6 +6,7 @@ Uso: `uv run python manage.py seed_demo`
 from datetime import datetime, time, timedelta
 from decimal import Decimal
 
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
@@ -198,9 +199,19 @@ class Command(BaseCommand):
                 )
                 created += int(was_created)
 
+        demo_email = "demo@example.com"
+        user, user_created = get_user_model().objects.get_or_create(
+            email=demo_email,
+            defaults={"first_name": "Demo"},
+        )
+        if user_created:
+            user.set_password("demo12345")  # cuenta de demo pública, solo datos de ejemplo
+            user.save()
+
         self.stdout.write(
             self.style.SUCCESS(
                 f"{len(movies)} películas · {len(rooms)} salas · "
-                f"{created} función(es) nueva(s) · {skipped} omitida(s) por horario pasado"
+                f"{created} función(es) nueva(s) · {skipped} omitida(s) por horario pasado · "
+                f"usuario demo: {demo_email} / demo12345"
             )
         )
