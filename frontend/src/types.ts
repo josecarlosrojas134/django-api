@@ -3,17 +3,30 @@ export interface User {
   email: string;
 }
 
+export type RoomFormat = "standard" | "imax" | "dolby" | "vip" | "screenx";
+
 export interface Movie {
   id: number;
   title: string;
   description: string;
   duration_minutes: number;
+  tagline: string;
+  director: string;
+  cast: string[];
+  poster_url: string;
+  rating: number | null;
+  age_rating: string;
+  is_premiere: boolean;
+  trailer_url: string;
+  genres: string[];
 }
 
 export interface Screening {
   id: number;
   movie: Movie;
   room: string;
+  room_format: RoomFormat;
+  room_features: string[];
   starts_at: string;
   price: string;
   total_seats: number;
@@ -30,6 +43,7 @@ export interface SeatMap {
   rows: number;
   seats_per_row: number;
   occupied: Seat[];
+  accessible?: Seat[];
 }
 
 export interface Reservation {

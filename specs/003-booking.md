@@ -14,11 +14,20 @@ películas, salas y funciones desde el admin de Django.
 - **R1:** el catálogo (`películas`, `funciones`) es público y de solo lectura.
 - **R2:** una sala define su tamaño con `rows` × `seats_per_row`; una butaca es un par `(row, number)` dentro de esos límites.
 - **R3:** cada función tiene película, sala, fecha/hora y precio; no puede haber dos funciones en la misma sala a la misma hora.
-- **R4:** `GET /api/v1/screenings/{id}/seats/` devuelve el tamaño de la sala y las butacas ocupadas.
+- **R4:** `GET /api/v1/screenings/{id}/seats/` devuelve el tamaño de la sala, las butacas ocupadas y las butacas accesibles configuradas en la sala.
 - **R5:** `POST /api/v1/reservations/` con `{screening, seats:[{row, number}]}` crea una reserva confirmada con código único y total calculado.
 - **R6:** una butaca ocupada no se puede reservar dos veces, ni siquiera con peticiones simultáneas.
 - **R7:** solo el dueño ve y cancela sus reservas.
 - **R8:** cancelar libera las butacas y conserva el histórico de la reserva.
+- **R9:** cada película puede publicar una ficha con `tagline`, `director`, `cast`, `poster_url`,
+  `rating` (0–10), `age_rating`, `is_premiere` y `genres`; `GET /api/v1/movies/{id}/` devuelve
+  esos datos. Todos los campos son opcionales: sin ellos el catálogo sigue funcionando.
+- **R10:** cada sala declara un `format` (`standard`, `imax`, `dolby`, `vip`, `screenx`) y unas
+  `features`; las funciones exponen `room_format` y `room_features` para agrupar sesiones.
+
+- **R11:** una sala puede marcar butacas accesibles (`accessible_seats`, formato `fila:butaca`
+  separados por comas); `GET /api/v1/screenings/{id}/seats/` las expone como `accessible`
+  (`[{row, number}, …]`). Las entradas malformadas o fuera de la sala se ignoran.
 
 ## Criterios de aceptación
 
@@ -33,6 +42,12 @@ películas, salas y funciones desde el admin de Django.
 - [x] Un usuario no ve reservas de otro ni puede cancelarlas (`404`).
 - [x] Tras cancelar, la butaca aparece libre y se puede volver a reservar.
 - [x] Cancelar dos veces la misma reserva devuelve `400`.
+- [x] `GET /api/v1/movies/{id}/` devuelve la ficha con `cast` y `genres` como listas y
+  `rating` como número.
+- [x] Pedir una película inexistente devuelve `404`.
+- [x] Las funciones exponen `room_format` y `room_features`.
+- [x] `GET /api/v1/screenings/{id}/seats/` expone `accessible` con las butacas accesibles
+  configuradas en la sala, ignorando entradas malformadas o fuera de la sala.
 
 ## Fuera de alcance
 
@@ -44,6 +59,7 @@ películas, salas y funciones desde el admin de Django.
 ## Restricciones
 
 - Un solo cine; varias salas.
+- El `format` de la sala es informativo: no altera el precio ni las butacas disponibles.
 - Sin `SELECT FOR UPDATE` sobre la sala: la garantía es un índice único parcial en base de datos.
 - El precio se congela en la reserva: cambiar el precio de la función no altera reservas pasadas.
 - Toda la escritura ocurre dentro de una transacción.

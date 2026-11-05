@@ -44,10 +44,12 @@ django-api/
 - JWT (`djangorestframework-simplejwt`): `access` 30 min, `refresh` 7 días.
 - Todo endpoint es privado por defecto (`IsAuthenticated` global).
 - Endpoints: `POST /api/v1/auth/token/`, `POST /api/v1/auth/token/refresh/`, `GET /api/v1/me/`.
+- `token/` y `token/refresh/` comparten el scope de throttling `auth`: 10 peticiones por
+  minuto e IP (`ScopedRateThrottle`). El contador vive en la cache de Django.
 
 ## Reservas
 
-- Catálogo público: `GET /api/v1/movies/`, `GET /api/v1/screenings/`, `GET /api/v1/screenings/{id}/`, `GET /api/v1/screenings/{id}/seats/`.
+- Catálogo público: `GET /api/v1/movies/`, `GET /api/v1/movies/{id}/`, `GET /api/v1/screenings/`, `GET /api/v1/screenings/{id}/`, `GET /api/v1/screenings/{id}/seats/`.
 - Reservas privadas: `GET|POST /api/v1/reservations/`, `GET /api/v1/reservations/{id}/`, `POST /api/v1/reservations/{id}/cancel/`.
 - Una reserva nace `confirmed`; no hay reserva temporal con expiración.
 - La colisión de butacas se resuelve en base de datos: índice único parcial sobre `(screening, row, number)` con `active=True`. Al cancelar se pone `active=False` y la butaca vuelve a estar libre, conservando la reserva como histórico.
@@ -55,4 +57,9 @@ django-api/
 
 ## Despliegue
 
-(Pendiente: completar cuando exista el proyecto real.)
+- Salud: `GET /api/v1/health/` (y alias `GET /health/` para sondas que no conocen el
+  prefijo de versión). Ambos públicos.
+- CI: `.github/workflows/ci.yml` ejecuta `ruff check`, `ruff format --check` y `pytest`
+  contra un PostgreSQL 16 de servicio en cada push a `develop`/`master` y en cada PR.
+  No se necesita `uv` instalado en la máquina: la acción lo instala y usa `--frozen`.
+- (Pendiente: completar cuando exista el despliegue real.)

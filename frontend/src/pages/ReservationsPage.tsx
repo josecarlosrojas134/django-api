@@ -9,6 +9,135 @@ interface LocationState {
   flash?: string;
 }
 
+function TicketIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3 9V6.5A1.5 1.5 0 0 1 4.5 5h15A1.5 1.5 0 0 1 21 6.5V9a3 3 0 0 0 0 6v2.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5V15a3 3 0 0 0 0-6Z" />
+      <path d="M12 5v14" strokeDasharray="2 3" />
+    </svg>
+  );
+}
+
+function ReservationCard({
+  reservation,
+  cancelling,
+  onCancel,
+}: {
+  reservation: Reservation;
+  cancelling: boolean;
+  onCancel: () => void;
+}) {
+  const cancelled = reservation.status === "cancelled";
+
+  return (
+    <li
+      className={`glass animate-rise overflow-hidden rounded-xl transition ${
+        cancelled ? "opacity-55" : "hover:border-primary-container/40"
+      }`}
+    >
+      <div className="flex flex-col sm:flex-row">
+        <div className="flex min-w-0 flex-1 flex-col gap-4 p-5 sm:p-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded px-2.5 py-1 font-mono text-[10px] font-bold tracking-[0.08em] uppercase ${
+                cancelled
+                  ? "bg-surface-high text-on-surface-variant"
+                  : "bg-primary-container/15 text-primary"
+              }`}
+            >
+              <span
+                aria-hidden="true"
+                className={`h-1.5 w-1.5 rounded-full ${cancelled ? "bg-on-surface-variant" : "bg-primary"}`}
+              />
+              {cancelled ? "Cancelada" : "Confirmada"}
+            </span>
+            <span className="rounded bg-surface-low px-2.5 py-1 font-mono text-[10px] tracking-[0.08em] text-on-surface-variant uppercase">
+              {reservation.room}
+            </span>
+          </div>
+
+          <div className="space-y-1.5">
+            <h2 className="font-display text-xl leading-tight font-semibold tracking-tight text-on-surface sm:text-2xl">
+              {reservation.movie}
+            </h2>
+            <p className="text-sm text-on-surface-variant first-letter:uppercase">
+              {formatDate(reservation.starts_at)}
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <p className="font-mono text-[10px] tracking-[0.08em] text-on-surface-variant uppercase">
+              {reservation.seats.length === 1 ? "Butaca" : "Butacas"}
+            </p>
+            <ul className="flex flex-wrap gap-1.5">
+              {reservation.seats.map((seat) => (
+                <li
+                  key={`${seat.row}-${seat.number}`}
+                  className="rounded bg-surface-high px-2 py-1 font-mono text-[11px] text-on-surface"
+                >
+                  F{seat.row}-{seat.number}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="relative flex flex-col justify-between gap-4 border-t border-dashed border-white/10 bg-surface-lowest/40 p-5 sm:w-56 sm:border-t-0 sm:border-l">
+          <span
+            aria-hidden="true"
+            className="absolute -top-2 -left-2 hidden h-4 w-4 rounded-full bg-surface-lowest sm:block"
+          />
+          <span
+            aria-hidden="true"
+            className="absolute -bottom-2 -left-2 hidden h-4 w-4 rounded-full bg-surface-lowest sm:block"
+          />
+
+          <div className="space-y-1">
+            <p className="font-mono text-[10px] tracking-[0.08em] text-on-surface-variant uppercase">
+              Código
+            </p>
+            <p className="flex items-center gap-2 font-mono text-sm font-bold tracking-[0.08em] text-primary">
+              <TicketIcon />
+              {reservation.code}
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="font-mono text-[10px] tracking-[0.08em] text-on-surface-variant uppercase">
+                Total
+              </span>
+              <span className="font-display text-xl font-bold text-on-surface">
+                {formatPrice(reservation.total)}
+              </span>
+            </div>
+
+            {!cancelled && (
+              <button
+                type="button"
+                onClick={onCancel}
+                disabled={cancelling}
+                className="w-full rounded-lg border border-white/10 px-3 py-2 text-xs font-medium text-on-surface-variant transition hover:border-crimson/50 hover:text-crimson disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {cancelling ? "Cancelando…" : "Cancelar reserva"}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </li>
+  );
+}
+
 export function ReservationsPage() {
   const location = useLocation();
   const [flash, setFlash] = useState<string | null>(
@@ -48,35 +177,71 @@ export function ReservationsPage() {
     }
   }
 
+  const cancelledCount = reservations.filter((reservation) => reservation.status === "cancelled").length;
+  const activeCount = reservations.length - cancelledCount;
+
   return (
-    <div className="space-y-6">
-      <header className="space-y-2">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-amber-400">
+    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-8">
+      <header className="mb-8 space-y-3">
+        <p className="font-mono text-[11px] font-bold tracking-[0.08em] text-primary uppercase">
           Tus entradas
         </p>
-        <h1 className="text-3xl font-semibold tracking-tight">Mis reservas</h1>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <h1 className="font-display text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+            Mis reservas
+          </h1>
+          {!loading && reservations.length > 0 && (
+            <p className="font-mono text-xs tracking-[0.04em] text-on-surface-variant uppercase">
+              {activeCount} {activeCount === 1 ? "activa" : "activas"}
+              {cancelledCount > 0 && ` · ${cancelledCount} ${cancelledCount === 1 ? "cancelada" : "canceladas"}`}
+            </p>
+          )}
+        </div>
       </header>
 
       {flash && (
-        <p className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+        <p
+          role="status"
+          className="mb-6 flex items-center gap-2 rounded-xl border border-primary-container/40 bg-primary-container/10 px-4 py-3 text-sm text-on-surface"
+        >
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-container text-[11px] font-bold text-on-primary">
+            ✓
+          </span>
           {flash}
         </p>
       )}
 
       {error && (
-        <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <p
+          role="alert"
+          className="mb-6 rounded-xl border border-crimson/30 bg-crimson/10 px-4 py-3 text-sm text-on-surface"
+        >
           {error}
         </p>
       )}
 
-      {loading && <p className="text-slate-400">Cargando reservas…</p>}
+      {loading && (
+        <ul className="space-y-4">
+          {[0, 1].map((index) => (
+            <li key={index} className="glass h-44 animate-pulse rounded-xl" aria-hidden="true" />
+          ))}
+        </ul>
+      )}
 
       {!loading && reservations.length === 0 && (
-        <div className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-10 text-center">
-          <p className="text-slate-400">Todavía no tienes entradas.</p>
+        <div className="glass rounded-xl px-6 py-14 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-surface-high text-primary">
+            <TicketIcon />
+          </div>
+          <h2 className="font-display text-xl font-semibold tracking-tight">
+            Todavía no tienes entradas
+          </h2>
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-on-surface-variant">
+            Elige una función de la cartelera, marca tus butacas y tu reserva aparecerá aquí.
+          </p>
           <Link
             to="/"
-            className="inline-block rounded-full bg-amber-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-300"
+            className="mt-6 inline-block rounded-lg bg-primary-container px-5 py-2.5 text-sm font-semibold text-on-primary transition hover:bg-primary-bright hover:shadow-[0_0_24px_rgba(245,158,11,0.4)]"
           >
             Ver cartelera
           </Link>
@@ -84,63 +249,14 @@ export function ReservationsPage() {
       )}
 
       <ul className="space-y-4">
-        {reservations.map((reservation) => {
-          const cancelled = reservation.status === "cancelled";
-          return (
-            <li
-              key={reservation.id}
-              className={`rounded-2xl border p-6 ${
-                cancelled
-                  ? "border-white/5 bg-white/[0.02] opacity-60"
-                  : "border-white/10 bg-white/5"
-              }`}
-            >
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-xl font-semibold">{reservation.movie}</h2>
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 text-xs ${
-                        cancelled
-                          ? "bg-slate-800 text-slate-400"
-                          : "bg-emerald-500/15 text-emerald-300"
-                      }`}
-                    >
-                      {cancelled ? "Cancelada" : "Confirmada"}
-                    </span>
-                  </div>
-                  <p className="text-sm capitalize text-slate-400">
-                    {formatDate(reservation.starts_at)} · {reservation.room}
-                  </p>
-                  <p className="text-sm text-slate-300">
-                    {reservation.seats
-                      .map((seat) => `F${seat.row}-${seat.number}`)
-                      .join(" · ")}
-                  </p>
-                </div>
-
-                <div className="flex flex-col items-end gap-2">
-                  <span className="text-lg font-semibold">
-                    {formatPrice(reservation.total)}
-                  </span>
-                  <span className="font-mono text-xs tracking-widest text-amber-300">
-                    {reservation.code}
-                  </span>
-                  {!cancelled && (
-                    <button
-                      type="button"
-                      onClick={() => cancel(reservation.id)}
-                      disabled={cancelling === reservation.id}
-                      className="rounded-full border border-white/15 px-3 py-1 text-xs text-slate-300 transition hover:border-red-400/50 hover:text-red-300 disabled:opacity-50"
-                    >
-                      {cancelling === reservation.id ? "Cancelando…" : "Cancelar"}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </li>
-          );
-        })}
+        {reservations.map((reservation) => (
+          <ReservationCard
+            key={reservation.id}
+            reservation={reservation}
+            cancelling={cancelling === reservation.id}
+            onCancel={() => cancel(reservation.id)}
+          />
+        ))}
       </ul>
     </div>
   );

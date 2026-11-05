@@ -74,6 +74,8 @@ export const api = {
 
   movies: () => request<Paginated<Movie>>("/movies/"),
 
+  movie: (id: number) => request<Movie>(`/movies/${id}/`),
+
   screenings: (movieId?: number) =>
     request<Paginated<Screening>>(
       movieId ? `/screenings/?movie=${movieId}` : "/screenings/",

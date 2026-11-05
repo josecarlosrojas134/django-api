@@ -1,18 +1,84 @@
 @import "tailwindcss";
 
+@theme {
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-surface: #10131a;
+  --color-surface-lowest: #0b0e14;
+  --color-surface-low: #191c22;
+  --color-surface-container: #1d2026;
+  --color-surface-high: #272a31;
+  --color-surface-highest: #32353c;
+
+  --color-on-surface: #e1e2eb;
+  --color-on-surface-variant: #bdb6ab;
+
+  --color-primary: #ffc174;
+  --color-primary-container: #f59e0b;
+  --color-primary-bright: #fbbf24;
+  --color-on-primary: #472a00;
+
+  --color-tertiary: #ffc32d;
+  --color-crimson: #ef4444;
+  --color-outline: #a08e7a;
+
+  --animate-glow: glow 3s ease-in-out infinite;
+  --animate-rise: rise 0.5s ease-out both;
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 18px rgb(245 158 11 / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 26px rgb(245 158 11 / 0.5);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @layer base {
   html {
     color-scheme: dark;
   }
 
   body {
-    @apply bg-slate-950 text-slate-100 antialiased;
-    font-family:
-      ui-sans-serif,
-      system-ui,
-      -apple-system,
-      "Segoe UI",
-      Roboto,
-      sans-serif;
+    @apply bg-surface text-on-surface antialiased;
+    font-family: var(--font-body);
+    background-image: radial-gradient(ellipse at 50% 0%, #1a2238 0%, #0b0e14 70%);
+    background-attachment: fixed;
   }
+
+  ::selection {
+    @apply bg-primary-container text-on-primary;
+  }
+}
+
+/* Superficie de vidrio del sistema: paneles, tarjetas y barra lateral. */
+@utility glass {
+  background: rgb(18 24 36 / 0.72);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgb(255 255 255 / 0.08);
+}
+
+/* Vidrio más denso para capas flotantes. */
+@utility glass-strong {
+  background: rgb(27 34 52 / 0.9);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  box-shadow:
+    0 20px 40px -10px rgb(0 0 0 / 0.7),
+    0 0 25px 0 rgb(245 158 11 / 0.06);
 }

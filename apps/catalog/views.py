@@ -14,15 +14,26 @@ from .serializers import MovieSerializer, ScreeningSerializer
 def screenings_with_occupancy():
     return (
         Screening.objects.select_related("movie", "room")
+        .prefetch_related("movie__genres")
         .annotate(occupied=Count("booked_seats", filter=Q(booked_seats__active=True)))
         .order_by("starts_at")
     )
 
 
+def active_movies():
+    return Movie.objects.filter(is_active=True).prefetch_related("genres")
+
+
 class MovieListView(generics.ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = MovieSerializer
-    queryset = Movie.objects.filter(is_active=True)
+    queryset = active_movies()
+
+
+class MovieDetailView(generics.RetrieveAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = MovieSerializer
+    queryset = active_movies()
 
 
 class ScreeningListView(generics.ListAPIView):
@@ -60,5 +71,9 @@ class ScreeningSeatsView(APIView):
                 "rows": screening.room.rows,
                 "seats_per_row": screening.room.seats_per_row,
                 "occupied": list(occupied),
+                "accessible": [
+                    {"row": row, "number": number}
+                    for row, number in screening.room.accessible_seat_pairs
+                ],
             }
         )

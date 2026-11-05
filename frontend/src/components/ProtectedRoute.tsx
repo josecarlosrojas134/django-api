@@ -8,7 +8,11 @@ export function ProtectedRoute({ children }: { children: ReactElement }) {
   const location = useLocation();
 
   if (!ready) {
-    return <p className="p-16 text-center text-slate-400">Cargando…</p>;
+    return (
+      <p className="p-16 text-center font-mono text-xs tracking-[0.08em] text-on-surface-variant uppercase">
+        Cargando…
+      </p>
+    );
   }
 
   if (!user) {

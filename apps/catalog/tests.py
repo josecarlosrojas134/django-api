@@ -10,7 +10,7 @@ from rest_framework.test import APIClient
 
 from apps.booking.models import Reservation, ReservationSeat
 
-from .models import Movie, Room, Screening
+from .models import Genre, Movie, Room, Screening
 
 User = get_user_model()
 
@@ -44,6 +44,46 @@ def test_movies_are_public(movie):
     assert response.data["results"][0]["title"] == "Interestelar"
 
 
+def test_movie_detail_exposes_metadata(movie):
+    movie.tagline = "No estabas destinado a morir aquí."
+    movie.director = "Christopher Nolan"
+    movie.cast = "Matthew McConaughey, Anne Hathaway"
+    movie.poster_url = "https://example.com/poster.jpg"
+    movie.rating = Decimal("8.7")
+    movie.age_rating = "+12"
+    movie.is_premiere = True
+    movie.save()
+    movie.genres.set([Genre.objects.create(name="Ciencia ficción")])
+
+    response = APIClient().get(f"/api/v1/movies/{movie.id}/")
+
+    assert response.status_code == 200
+    assert response.data["tagline"] == "No estabas destinado a morir aquí."
+    assert response.data["director"] == "Christopher Nolan"
+    assert response.data["cast"] == ["Matthew McConaughey", "Anne Hathaway"]
+    assert response.data["genres"] == ["Ciencia ficción"]
+    assert response.data["rating"] == Decimal("8.7")
+    assert response.data["age_rating"] == "+12"
+    assert response.data["is_premiere"] is True
+
+
+def test_movie_detail_returns_404_when_missing():
+    response = APIClient().get("/api/v1/movies/9999/")
+
+    assert response.status_code == 404
+
+
+def test_screening_exposes_room_format_and_features(screening):
+    screening.room.format = Room.Format.IMAX
+    screening.room.features = "Láser 4K, Dolby Atmos"
+    screening.room.save()
+
+    response = APIClient().get(f"/api/v1/screenings/{screening.id}/")
+
+    assert response.data["room_format"] == "imax"
+    assert response.data["room_features"] == ["Láser 4K", "Dolby Atmos"]
+
+
 def test_future_screenings_are_listed_and_past_ones_hidden(screening):
     Screening.objects.create(
         movie=screening.movie,
@@ -70,3 +110,23 @@ def test_seating_map_shows_occupied_seats(screening):
     assert seats_map.data["seats_per_row"] == 4
     assert seats_map.data["occupied"] == [{"row": 1, "number": 2}]
     assert detail.data["seats_available"] == 11
+
+
+def test_seating_map_exposes_accessible_seats(screening):
+    screening.room.accessible_seats = "1:1, 1:4, 3:2, invalid, 9:9"
+    screening.room.save()
+
+    response = APIClient().get(f"/api/v1/screenings/{screening.id}/seats/")
+
+    assert response.status_code == 200
+    assert response.data["accessible"] == [
+        {"row": 1, "number": 1},
+        {"row": 1, "number": 4},
+        {"row": 3, "number": 2},
+    ]
+
+
+def test_seating_map_without_accessible_setting_is_empty(screening):
+    response = APIClient().get(f"/api/v1/screenings/{screening.id}/seats/")
+
+    assert response.data["accessible"] == []
