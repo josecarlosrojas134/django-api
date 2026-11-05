@@ -13,7 +13,7 @@ La autenticación por email y JWT se especifica en [002-auth.md](002-auth.md).
 
 ## Requisitos
 
-- **R1:** existe un endpoint `GET /api/v1/health/` que responde `200` con `{"status": "ok"}` sin autenticación.
+- **R1:** existe un endpoint `GET /api/v1/health/` que responde `200` con `{"status": "ok"}` sin autenticación. El mismo endpoint se publica como `GET /health/` para sondas de infraestructura.
 - **R2:** existe un endpoint `GET /api/v1/me/` que devuelve el usuario autenticado (`id`, `email`) y `401` si no hay token válido.
 - **R3:** los errores de validación devuelven `400` con un cuerpo uniforme `{"detail": ..., "fields": {...}}`.
 - **R4:** todas las rutas de negocio viven bajo `/api/` y van versionadas como `/api/v1/`.

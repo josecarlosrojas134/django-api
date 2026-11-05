@@ -17,6 +17,7 @@ JWT con el email como identificador.
 - **R4:** `POST /api/v1/auth/token/refresh/` con un `refresh` válido devuelve un `access` nuevo.
 - **R5:** `GET /api/v1/me/` con `Authorization: Bearer <access>` devuelve solo `id` y `email`.
 - **R6:** los endpoints de cuenta se crean con `User.objects.create_user` / `create_superuser`, sin `username`.
+- **R7:** `POST /api/v1/auth/token/` y `POST /api/v1/auth/token/refresh/` están limitados a 10 peticiones por minuto e IP; superar el límite devuelve `429`.
 
 ## Criterios de aceptación
 
@@ -27,6 +28,7 @@ JWT con el email como identificador.
 - [x] `/api/v1/me/` con token devuelve exactamente `{"id", "email"}`.
 - [x] `create_superuser` exige `is_staff` y `is_superuser`.
 - [x] El dominio del email se normaliza a minúsculas.
+- [x] Tras 10 intentos de login en un minuto, el siguiente devuelve `429`.
 
 ## Restricciones
 
@@ -34,9 +36,11 @@ JWT con el email como identificador.
 - No se exponen `password`, `is_staff`, `last_login` ni permisos en ninguna respuesta.
 - Sin blacklist de tokens en esta iteración: cerrar sesión es responsabilidad del cliente.
 - La contraseña se valida con los validadores de Django, nunca a mano.
+- El throttling es por IP y ventana de un minuto, con la cache por defecto de Django.
 
 ## Pendiente para más adelante
 
 - Rotación de refresh tokens con `token_blacklist`.
 - Verificación de email y recuperación de contraseña.
-- Rate limiting en los endpoints de autenticación.
+- Cache compartida (Redis) para el throttling: con `LocMemCache` el límite es por proceso,
+  así que con varios workers el límite efectivo se multiplica.

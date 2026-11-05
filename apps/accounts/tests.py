@@ -98,3 +98,16 @@ def test_validation_errors_use_uniform_format(client):
     assert response.status_code == 400
     assert set(response.data) == {"detail", "fields"}
     assert "email" in response.data["fields"]
+
+
+def test_login_is_throttled_after_too_many_attempts(client, user):
+    """10 intentos por minuto: el siguiente debe cortarse, tenga o no la contraseña buena."""
+
+    payload = {"email": user.email, "password": "incorrecta"}
+    for _ in range(10):
+        assert client.post("/api/v1/auth/token/", payload).status_code == 401
+
+    response = client.post("/api/v1/auth/token/", payload)
+
+    assert response.status_code == 429
+    assert "detail" in response.data

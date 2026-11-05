@@ -66,7 +66,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = "es-es"
-TIME_ZONE = "UTC"
+TIME_ZONE = "America/La_Paz"
 USE_I18N = True
 USE_TZ = True
 
@@ -92,6 +92,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
     "EXCEPTION_HANDLER": "apps.common.exceptions.api_exception_handler",
+    # El login es el endpoint que más interesa proteger de fuerza bruta.
+    "DEFAULT_THROTTLE_RATES": {"auth": "10/min"},
 }
 
 SIMPLE_JWT = {

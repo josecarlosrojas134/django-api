@@ -13,6 +13,16 @@ def test_health_returns_ok_without_authentication():
 
 
 @pytest.mark.django_db
+def test_health_is_also_available_at_root():
+    """Sondas de infraestructura suelen llamar a `/health`, sin prefijo de versión."""
+
+    response = APIClient().get("/health/")
+
+    assert response.status_code == 200
+    assert response.data == {"status": "ok"}
+
+
+@pytest.mark.django_db
 def test_drf_error_uses_uniform_format():
     """Un 405 lo genera DRF, así que debe pasar por el handler común."""
 
